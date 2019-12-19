@@ -88,6 +88,8 @@ class Nozzle :
                     if i == initNode.selectClosestNode(interNode_down)[1]:
                         i.link_up = True
 
+
+
         self.seg = seg
         #Computing the nozzle's shape
         segWall = []
