@@ -6,7 +6,7 @@ heightLimit=20
 #Geometry parameters
 throatRadius = 1
 throatAngle = 18.375
-throatAngleStep = 30
+throatAngleStep = 20
 # throatMinAngle = 0.375
 
 #physical parameters
@@ -36,4 +36,4 @@ noz = Nozzle(
 
 noz.save_contour()
 noz.save_data(display)
-noz.graph()
+# noz.graph()
