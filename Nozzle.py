@@ -9,7 +9,6 @@ from Wall import *
 import csv
 
 class Nozzle :
-
     def __init__(self,
                  length_limit,
                  height_limit,
