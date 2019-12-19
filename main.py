@@ -8,7 +8,7 @@ heightLimit=20
 #Geometry parameters
 throatRadius = 1
 throatAngle = 18.375
-throatAngleStep = 37
+throatAngleStep = 9
 # throatMinAngle = 0.375
 
 #physical parameters
