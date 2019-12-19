@@ -39,7 +39,7 @@ noz = Nozzle(
 noz.save_contour()
 noz.save_data(display)
 t1 = time.process_time()
-noz.graph()
+noz.graph(show=False)
 t2 = time.process_time()
 print(t1-t0)
 print(t2-t0)

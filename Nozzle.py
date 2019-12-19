@@ -48,7 +48,7 @@ class Nozzle :
         #Creating intial angles at sharp throat
         self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
         floor = Wall(0,0,0)
-        plt.figure()
+
         self.wall = [self.seed[-1]]
         gen = self.seed.copy()
         self.seg=[]
@@ -63,43 +63,44 @@ class Nozzle :
         self.seg.append(Segment(self.seed[0],new))
 
         #Expanding the characteristics fan
-        for initNode in gen :
+        for initial_node in gen :
             candidate_list = []
 
-            if not(initNode.link_down) and initNode.y != 0 :
+            if not(initial_node.link_down) and initial_node.y != 0 :
 
                 #checking for intersection with x-axis
-                wall_candidate = initNode.interWall(floor,self.length_limit,self.height_limit)
+                wall_candidate = initial_node.interWall(floor,self.length_limit,self.height_limit)
                 if isinstance(wall_candidate,Node) :
                     candidate_list.append([wall_candidate,floor])
 
                 #checking for intersections with all characteristics
-                for targetNode in gen :
-                    if targetNode != initNode and targetNode.link_up ==False :
-                            fan_candidate = initNode.interKm(targetNode,self.length_limit,self.height_limit)
+                for target_node in gen :
+                    if target_node != initial_node and target_node.link_up ==False :
+                            fan_candidate = initial_node.interKm(target_node,self.length_limit,self.height_limit)
                             if isinstance(fan_candidate,Node) :
-                                if fan_candidate.x > targetNode.x and fan_candidate.x > initNode.x :
-                                    candidate_list.append( [fan_candidate,targetNode] )
+                                if fan_candidate.x > target_node.x and fan_candidate.x > initial_node.x :
+                                    candidate_list.append( [fan_candidate,target_node] )
 
             #selecting the closest candidate
             if candidate_list != []:
-                selected_candidate = initNode.selectClosestNode(candidate_list)
+                selected_candidate = initial_node.selectClosestNode(candidate_list)
                 gen.append(selected_candidate[0])
-                self.seg.append(Segment(initNode,selected_candidate[0]))
+                self.seg.append(Segment(initial_node,selected_candidate[0]))
                 if isinstance(selected_candidate[1],Node):
                     self.seg.append(Segment(selected_candidate[1],selected_candidate[0]))
-                initNode.link_down = True
+                initial_node.link_down = True
 
                 for i in gen :
                     if i == selected_candidate[1]:
                         i.link_up = True
 
         #Computing the nozzle's shape
-        for initNode in gen :
-            if not(initNode.link_up) :
-                inter= initNode.findRoof(self.wall)
-                self.wall.append(inter)
-                self.seg.append(Segment(initNode,inter))
+        for initial_node in gen :
+            if not(initial_node.link_up) :
+                wall_candidate = initial_node.findRoof(self.wall)
+                self.wall.append(wall_candidate)
+                self.seg.append(Segment(initial_node,wall_candidate))
+
         for i in gen :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
         for i in self.seed :
@@ -112,14 +113,11 @@ class Nozzle :
 
 
 
-    def graph(self):
-            # plt.figure()
+    def graph(self,show=True):
+            plt.figure()
             nozzle_ax = plt.subplot(111)
             nozzle_ax.plot([i.x for i in self.wall],[i.y for i in self.wall],'b-')
-            nozzle_ax.plot([i.x for i in self.wall],[-i.y for i in self.wall],'b-')
-
-            for i in self.fan :
-                i.graphNode(nozzle_ax,'ko')
+            # nozzle_ax.plot([i.x for i in self.wall],[-i.y for i in self.wall],'b-')
             for i in self.seg :
                 i.graphSegment(nozzle_ax)
 
