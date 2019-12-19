@@ -20,9 +20,9 @@ class Nozzle :
                  air_gas_constant,
                  mass_flow,
                  g,
-                 theta_bottom,
                  theta_top,
-                 theta_step):
+                 theta_step_num,
+                 theta_bottom=0.375):
         self.length_limit       = length_limit
         self.height_limit       = height_limit
         self.throat_radius      = throat_radius
@@ -32,26 +32,26 @@ class Nozzle :
         self.air_gas_constant   = air_gas_constant
         self.mass_flow          = mass_flow
         self.g                  = g
-        self.theta_bottom       = theta_bottom
-        self.theta_top          = theta_top
-        self.theta_step         = theta_step
 
+        #Calculating total temp and pressure from (T/P) at the throat
         self.temp_totale = self.throat_temperature*(1+(self.g-1)*0.5*self.throat_mach*self.throat_mach)
         self.p_totale = self.throat_pressure*pow((1+(self.g-1)*0.5*self.throat_mach*self.throat_mach),self.g/(self.g-1))
-        self.theta_list = np.arange(self.theta_bottom,self.theta_top+self.theta_step,self.theta_step)
 
+        #Defining the angles with which to start the calculation
+        self.theta_list = np.linspace(theta_bottom,theta_top,theta_step_num)
         self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
-        number_of_points = (self.theta_top-self.theta_bottom)/self.theta_step
-        ylist = [(thet/self.theta_top)*self.throat_radius for thet in self.theta_list]
-        self.seed = [Node(0,self.throat_radius,self.theta_list[i],1,nu=self.theta_list[i]) for i in range(len(self.theta_list))]
 
-        #initializing things
+
+
+
+
+        #Creating intial angles at sharp throat
+        self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
         floor = Wall(0,0,0)
-        plt.figure()
-        ax=plt.subplot(111)
+
         self.wall = [self.seed[-1]]
         gen = self.seed.copy()
-        seg=[]
+        self.seg=[]
 
         #computing the first point with the right values to initiate calculation
         new = self.seed[0].interWall(floor,self.length_limit,self.height_limit)
@@ -60,45 +60,47 @@ class Nozzle :
         new.recalculate()
         self.seed[0].link_down = True
         gen.append(new)
-        seg.append(Segment(self.seed[0],new))
+        self.seg.append(Segment(self.seed[0],new))
 
         #Expanding the characteristics fan
-        for initNode in gen :
-            interNode_down = []
+        for initial_node in gen :
+            candidate_list = []
 
-            if not(initNode.link_down) and initNode.y != 0 :
-                if initNode.interWall(floor,self.length_limit,self.height_limit) != False :
-                    interNode_down.append([initNode.interWall(floor,self.length_limit,self.height_limit),floor])
-                for targetNode in gen :
-                    if targetNode != initNode :
-                        if targetNode.link_up ==False :
-                            if initNode.interKm(targetNode,self.length_limit,self.height_limit) != False :
-                                if initNode.interKm(targetNode,self.length_limit,self.height_limit).x > targetNode.x and initNode.interKm(targetNode,self.length_limit,self.height_limit).x > initNode.x :
-                                    interNode_down.append( [initNode.interKm(targetNode,self.length_limit,self.height_limit),targetNode] )
+            if not(initial_node.link_down) and initial_node.y != 0 :
 
-            if interNode_down != []:
-                gen.append(initNode.selectClosestNode(interNode_down)[0])
-                seg.append(Segment(initNode,initNode.selectClosestNode(interNode_down)[0]))
-                if isinstance(initNode.selectClosestNode(interNode_down)[1],Node):
-                    seg.append(Segment(initNode.selectClosestNode(interNode_down)[1],initNode.selectClosestNode(interNode_down)[0]))
+                #checking for intersection with x-axis
+                wall_candidate = initial_node.interWall(floor,self.length_limit,self.height_limit)
+                if isinstance(wall_candidate,Node) :
+                    candidate_list.append([wall_candidate,floor])
 
-                initNode.link_down = True
+                #checking for intersections with all characteristics
+                for target_node in gen :
+                    if target_node != initial_node and target_node.link_up ==False :
+                            fan_candidate = initial_node.interKm(target_node,self.length_limit,self.height_limit)
+                            if isinstance(fan_candidate,Node) :
+                                if fan_candidate.x > target_node.x and fan_candidate.x > initial_node.x :
+                                    candidate_list.append( [fan_candidate,target_node] )
+
+            #selecting the closest candidate
+            if candidate_list != []:
+                selected_candidate = initial_node.selectClosestNode(candidate_list)
+                gen.append(selected_candidate[0])
+                self.seg.append(Segment(initial_node,selected_candidate[0]))
+                if isinstance(selected_candidate[1],Node):
+                    self.seg.append(Segment(selected_candidate[1],selected_candidate[0]))
+                initial_node.link_down = True
 
                 for i in gen :
-                    if i == initNode.selectClosestNode(interNode_down)[1]:
+                    if i == selected_candidate[1]:
                         i.link_up = True
 
-
-
-        self.seg = seg
         #Computing the nozzle's shape
-        segWall = []
-        for initNode in gen :
-            if not(initNode.link_up) :
-                inter= initNode.findRoof(self.wall)
-                self.wall.append(inter)
-                segWall.append(Segment(self.wall[-2],inter))
-                seg.append(Segment(initNode,inter))
+        for initial_node in gen :
+            if not(initial_node.link_up) :
+                wall_candidate = initial_node.findRoof(self.wall)
+                self.wall.append(wall_candidate)
+                self.seg.append(Segment(initial_node,wall_candidate))
+
         for i in gen :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
         for i in self.seed :
@@ -106,28 +108,21 @@ class Nozzle :
         for i in self.wall :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
 
-        self.fan=[]
-        for i in gen :
-            if i.x != 0:
-                self.fan.append(i)
-
-        self.wallx = [i.x for i in self.wall]
-        self.wally = [i.y for i in self.wall]
+        #self.fan contains node on the nozzle contour
+        self.fan=[i for i in gen if i.x != 0]
 
 
-    def graph(self):
-            # plt.figure()
-            ax = plt.subplot(111)
-            ax.plot(self.wallx,self.wally,'b-')
-            ax.plot(self.wallx,[-i for i in self.wally],'b-')
 
-            for i in self.fan :
-                i.graphNode(ax,'ko')
+    def graph(self,show=True):
+            plt.figure()
+            nozzle_ax = plt.subplot(111)
+            nozzle_ax.plot([i.x for i in self.wall],[i.y for i in self.wall],'b-')
+            # nozzle_ax.plot([i.x for i in self.wall],[-i.y for i in self.wall],'b-')
             for i in self.seg :
-                i.graphSegment(ax)
+                i.graphSegment(nozzle_ax)
 
-            ax.set_aspect('equal')
-            ax.grid()
+            nozzle_ax.set_aspect('equal')
+            nozzle_ax.grid()
             plt.show()
 
     def Printseed(self):
