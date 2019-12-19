@@ -1,4 +1,6 @@
 from Nozzle import *
+import time
+t0 = time.process_time()
 #Limits of the canva
 lengthLimit=50
 heightLimit=20
@@ -6,7 +8,7 @@ heightLimit=20
 #Geometry parameters
 throatRadius = 1
 throatAngle = 18.375
-throatAngleStep = 20
+throatAngleStep = 37
 # throatMinAngle = 0.375
 
 #physical parameters
@@ -36,4 +38,8 @@ noz = Nozzle(
 
 noz.save_contour()
 noz.save_data(display)
-# noz.graph()
+t1 = time.process_time()
+noz.graph()
+t2 = time.process_time()
+print(t1-t0)
+print(t2-t0)
