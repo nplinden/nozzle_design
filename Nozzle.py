@@ -181,3 +181,6 @@ class Nozzle :
                 for prop in selection :
                     dict[prop] = str(node.attrDict[prop]).replace('.',',')
                 writer.writerow(dict)
+
+    def misc(self):
+        return
