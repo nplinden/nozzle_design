@@ -6,8 +6,8 @@ heightLimit=20
 #Geometry parameters
 throatRadius = 1
 throatAngle = 18.375
-throatAngleStep = 1
-throatMinAngle = 0.375
+throatAngleStep = 30
+# throatMinAngle = 0.375
 
 #physical parameters
 throatPressure= 10e5 #Pa
@@ -30,11 +30,10 @@ noz = Nozzle(
         air_gas_constant = airGasConstant,
         mass_flow = massFlow,
         g = gamma,
-        theta_bottom = throatMinAngle,
         theta_top = throatAngle,
-        theta_step = throatAngleStep
+        theta_step_num = throatAngleStep
         )
 
 noz.save_contour()
 noz.save_data(display)
-# noz.graph()
+noz.graph()

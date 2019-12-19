@@ -9,6 +9,7 @@ from Wall import *
 import csv
 
 class Nozzle :
+
     def __init__(self,
                  length_limit,
                  height_limit,
@@ -19,9 +20,9 @@ class Nozzle :
                  air_gas_constant,
                  mass_flow,
                  g,
-                 theta_bottom,
                  theta_top,
-                 theta_step):
+                 theta_step_num,
+                 theta_bottom=0.375):
         self.length_limit       = length_limit
         self.height_limit       = height_limit
         self.throat_radius      = throat_radius
@@ -31,23 +32,28 @@ class Nozzle :
         self.air_gas_constant   = air_gas_constant
         self.mass_flow          = mass_flow
         self.g                  = g
-        self.theta_bottom       = theta_bottom
-        self.theta_top          = theta_top
-        self.theta_step         = theta_step
+
+        # self.theta_bottom       = theta_bottom
+        # self.theta_top          = theta_top
+        # self.theta_step         = theta_step
+        # self.theta_list = np.arange(self.theta_bottom,self.theta_top+self.theta_step,self.theta_step)
+        # self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
+
+        self.theta_top = theta_top
+        self.theta_list = np.linspace(theta_bottom,theta_top,theta_step_num)
+        self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
+
 
         self.temp_totale = self.throat_temperature*(1+(self.g-1)*0.5*self.throat_mach*self.throat_mach)
         self.p_totale = self.throat_pressure*pow((1+(self.g-1)*0.5*self.throat_mach*self.throat_mach),self.g/(self.g-1))
-        self.theta_list = np.arange(self.theta_bottom,self.theta_top+self.theta_step,self.theta_step)
 
-        self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
-        number_of_points = (self.theta_top-self.theta_bottom)/self.theta_step
+        # number_of_points = (self.theta_top-self.theta_bottom)/self.theta_step
         ylist = [(thet/self.theta_top)*self.throat_radius for thet in self.theta_list]
         self.seed = [Node(0,self.throat_radius,self.theta_list[i],1,nu=self.theta_list[i]) for i in range(len(self.theta_list))]
 
         #initializing things
         floor = Wall(0,0,0)
         plt.figure()
-        ax=plt.subplot(111)
         self.wall = [self.seed[-1]]
         gen = self.seed.copy()
         seg=[]
@@ -116,17 +122,17 @@ class Nozzle :
 
     def graph(self):
             # plt.figure()
-            ax = plt.subplot(111)
-            ax.plot(self.wallx,self.wally,'b-')
-            ax.plot(self.wallx,[-i for i in self.wally],'b-')
+            nozzle_ax = plt.subplot(111)
+            nozzle_ax.plot(self.wallx,self.wally,'b-')
+            nozzle_ax.plot(self.wallx,[-i for i in self.wally],'b-')
 
             for i in self.fan :
-                i.graphNode(ax,'ko')
+                i.graphNode(nozzle_ax,'ko')
             for i in self.seg :
-                i.graphSegment(ax)
+                i.graphSegment(nozzle_ax)
 
-            ax.set_aspect('equal')
-            ax.grid()
+            nozzle_ax.set_aspect('equal')
+            nozzle_ax.grid()
             plt.show()
 
     def Printseed(self):
