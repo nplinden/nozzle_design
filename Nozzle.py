@@ -97,7 +97,6 @@ class Nozzle :
                 self.wall.append(inter)
                 segWall.append(Segment(self.wall[-2],inter))
                 seg.append(Segment(initNode,inter))
-
         for i in gen :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
         for i in self.seed :
