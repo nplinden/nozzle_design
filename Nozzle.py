@@ -101,7 +101,8 @@ class Nozzle :
                 self.wall.append(wall_candidate)
                 self.seg.append(Segment(initial_node,wall_candidate))
 
-        for i in gen :
+        self.fan=[i for i in gen if i.x != 0]
+        for i in self.fan :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
         for i in self.seed :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
@@ -109,7 +110,6 @@ class Nozzle :
             i.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
 
         #self.fan contains node on the nozzle contour
-        self.fan=[i for i in gen if i.x != 0]
 
 
 

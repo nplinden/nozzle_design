@@ -11,6 +11,10 @@ def PMfunction(M,g=1.4): #computes the Prandtl-Meyer function (nu) for given M a
     c3 = atan( sqrt(M*M-1) )
     return c1*c2-c3
 
+def m_from_nu(nu0,g=1.4):
+    f = lambda x : PMfunction(x,g)-nu0
+    mach0 = fsolve(f,1)
+    return mach0[0]
 
 def machAngle(M): #computes the Mach angles for a given Mach number
     return asin(1/M)
@@ -27,15 +31,7 @@ def centerNode(nu0,g=1.4):
     return [mach0,mu0,radToDeg(mu0)]
 
 
-def m_from_nu(nu0,g=1.4):
-    f = lambda x : PMfunction(x,g)-nu0
-    mach0 = fsolve(f,1)
-    return mach0[0]
 
-def A_from_M(M,A0=0.02010619298297468,g=1.4) :
-    c1 = pow(1+0.5*(g-1)*M*M,0.5*(g+1)/(g-1))
-    c2 = pow(0.5*(g+1),0.5*(g+1)/(g-1))
-    return (A0 * c1) / (M * c2)
 
 def R_from_A(A) :
     return sqrt(A/pi)
