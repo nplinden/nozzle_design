@@ -7,13 +7,12 @@ from Node import *
 from Segment import *
 from Wall import *
 import csv
-
+from CoolProp.CoolProp import PropsSI
 class Nozzle :
 
     def __init__(self,
                  length_limit,
                  height_limit,
-                 throat_radius,
                  throat_pressure,
                  throat_temperature,
                  throat_mach,
@@ -22,7 +21,8 @@ class Nozzle :
                  g,
                  theta_top,
                  theta_step_num,
-                 theta_bottom=0.375):
+                 throat_radius=1,
+                 theta_bottom=0.1):
         self.length_limit       = length_limit
         self.height_limit       = height_limit
         self.throat_radius      = throat_radius
@@ -32,7 +32,9 @@ class Nozzle :
         self.air_gas_constant   = air_gas_constant
         self.mass_flow          = mass_flow
         self.g                  = g
-
+        rho=PropsSI("D","P",self.throat_pressure,"T",self.throat_temperature,"Air")
+        throat_surf = self.mass_flow/(rho*sqrt(self.g*self.air_gas_constant*self.throat_temperature))
+        self.throat_radius =sqrt(throat_surf/pi)
         #Calculating total temp and pressure from (T/P) at the throat
         self.temp_totale = self.throat_temperature*(1+(self.g-1)*0.5*self.throat_mach*self.throat_mach)
         self.p_totale = self.throat_pressure*pow((1+(self.g-1)*0.5*self.throat_mach*self.throat_mach),self.g/(self.g-1))
@@ -40,10 +42,6 @@ class Nozzle :
         #Defining the angles with which to start the calculation
         self.theta_list = np.linspace(theta_bottom,theta_top,theta_step_num)
         self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
-
-
-
-
 
         #Creating intial angles at sharp throat
         self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
