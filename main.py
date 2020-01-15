@@ -8,8 +8,8 @@ lengthLimit=50
 heightLimit=20
 
 #Geometry parameters
-throatAngle =20.32369904967972
-throatAngleStep =25
+throatAngle =25
+throatAngleStep =10
 # throatMinAngle = 0.375
 
 #physical parameters
@@ -24,6 +24,7 @@ gamma = 1.4
 display = ['X','Y','mach','thet','nu','mu','T','P']
 
 noz = Nozzle(
+        ntype = "expansion",
         length_limit = lengthLimit,
         height_limit = heightLimit,
         throat_pressure = throatPressure,
@@ -36,22 +37,19 @@ noz = Nozzle(
         theta_step_num = throatAngleStep
         )
 
-noz.save_contour()
-noz.save_data(display)
+#noz.save_contour()
+#noz.save_data(display)
 t1 = time.process_time()
-noz.graph(show=True)
+noz.graph(show_seg=True)
 t2 = time.process_time()
-print(t1-t0)
-print(t2-t0)
+#print(t1-t0)
+#print(t2-t0)
 
 
 def gamma(p,t):
 	return PropsSI("CPMASS", "P", p, "T", t, "Air")/PropsSI("CVMASS", "P", p, "T", t, "Air")
 
-for i in noz.fan :
-        print(i)
-        print(str(gamma(i.p,i.temp)))
-for i in noz.wall :
-        print(i)
-print(noz.temp_totale)
-print(noz.p_totale)
+#for i in noz.wall :
+        #print(i)
+#print(noz.temp_totale)
+#print(noz.p_totale)
