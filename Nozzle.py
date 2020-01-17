@@ -12,56 +12,84 @@ class Nozzle :
 
     def __init__(self,
                  ntype,
-                 length_limit,
-                 height_limit,
-                 throat_pressure,
-                 throat_temperature,
-                 throat_mach,
+                 tank_pressure,
+                 tank_temperature,
                  air_gas_constant,
                  mass_flow,
                  g,
                  theta_top,
                  theta_step_num,
-                 throat_radius=1,
                  theta_bottom=0.1):
-        self.length_limit       = length_limit
-        self.height_limit       = height_limit
-        self.throat_radius      = throat_radius
-        self.throat_pressure    = throat_pressure
-        self.throat_temperature = throat_temperature
-        self.throat_mach        = throat_mach
+        self.tank_pressure    = tank_pressure
+        self.tank_temperature = tank_temperature
+        self.throat_mach        = 1
         self.air_gas_constant   = air_gas_constant
         self.mass_flow          = mass_flow
         self.g                  = g
-        rho=PropsSI("D","P",self.throat_pressure,"T",self.throat_temperature,"Air")
-        throat_surf = self.mass_flow/(rho*sqrt(self.g*self.air_gas_constant*self.throat_temperature))
-        self.throat_radius =sqrt(throat_surf/pi)
-        #Calculating total temp and pressure from (T/P) at the throat
-        self.temp_totale = self.throat_temperature*(1+(self.g-1)*0.5*self.throat_mach*self.throat_mach)
-        self.p_totale = self.throat_pressure*pow((1+(self.g-1)*0.5*self.throat_mach*self.throat_mach),self.g/(self.g-1))
-        if ntype == 'Min' :
+        self.theta_step_num     = theta_step_num
+        self.theta_top          = theta_top
+        self.theta_bottom       = theta_bottom
+        self.ntype = ntype
 
-            #Defining the angles with which to start the calculation
-            self.theta_list = np.linspace(theta_bottom,theta_top,theta_step_num)
-            self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
+        if self.ntype == 'min' :
+            self.initialize()
 
-            #Creating intial angles at sharp throat
-            self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
-            floor = Wall(0,0,0)
+        if self.ntype == 'expansion' :
+            self.initialize()
 
-            self.wall = [self.seed[-1]]
+        self.compute()
+####################     Computing    ######################
+    def compute(self):
+        seg = []
+        wall_seg = []
+        gen = []
+        gen.append(self.seed.copy())
+        new_gen=[]
+        new_gen.append(gen[0][0].interWall(self.floor,self.xlim,self.ylim))
+        seg.append(Segment(gen[0][0],new_gen[-1]))
+        for node in gen[0][1:]:
+            new_gen.append(node.interKm(new_gen[-1],self.xlim,self.ylim))
+            seg.append(Segment(node,new_gen[-1]))
+            seg.append(Segment(new_gen[-1],new_gen[-2]))
+        gen.append(new_gen.copy())
+        for i in range(1,self.theta_step_num):
+            new_gen=[]
+            new_gen.append(gen[i][1].interWall(self.floor,self.xlim,self.ylim))
+            seg.append(Segment(gen[i][1],new_gen[-1]))
+            for node in gen[i][2:]:
+                new_gen.append(node.interKm(new_gen[-1],self.xlim,self.ylim))
+                seg.append(Segment(node,new_gen[-1]))
+                seg.append(Segment(new_gen[-1],new_gen[-2]))
+            gen.append(new_gen.copy())
+        for generation in gen[1:] :
+            last_node = generation[-1]
+            wall_candidate = last_node.findRoof(self.wall)
+            self.wall.append(wall_candidate)
+            wall_seg.append(Segment(self.wall[-1],self.wall[-2]))
+            seg.append(Segment(self.wall[-1],last_node))
+        self.gen=gen
+        self.seg=seg
+        self.wall_seg=wall_seg
 
-        if ntype == 'expansion' :
-            theta = np.linspace(-pi/2, 1.5*np.pi, 1000)
-            
+
+    def initialize(self) :
+        if self.ntype=='expansion' :
+            #Calculating the throat's area and radius
+            rho=PropsSI("D","P",self.tank_pressure,"T",self.tank_temperature,"Air")
+            throat_surf = self.mass_flow/(rho*sqrt(self.g*self.air_gas_constant*self.tank_temperature))
+            self.throat_radius =sqrt(throat_surf/pi)
+            #Calculating total temp and pressure from (T/P) at the throat
+
+            self.temp_totale = self.tank_temperature*(1+(self.g-1)*0.5*0)
+            self.p_totale = self.tank_pressure*pow((1+(self.g-1)*0.5*0*0),self.g/(self.g-1))
+            theta = np.linspace(-pi/2, 1.5*pi, 1000)
             y0 = self.throat_radius
             x1 = 1.0*y0
-            theta_top = theta_top*2*pi/360
-            r=x1/sin(theta_top)
-            y1=r+y0-r*cos(theta_top)
+            self.theta_top = self.theta_top*2*pi/360
+            r=x1/sin(self.theta_top)
+            y1=r+y0-r*cos(self.theta_top)
             x_circle = 0
             y_circle = y0+r
-
             x=r*np.cos(theta)+x_circle
             y = r*np.sin(theta)+y_circle
             val = [[x[i],y[i]] for i in range(len(x)) if 0<=x[i]<=x1 and y[i]<=y1]
@@ -76,42 +104,30 @@ class Nozzle :
             nu_seed = theta_seed.copy()
             mach_seed = [m_from_nu(i) for i in nu_seed]
             self.seed = [Node(x_seed[i],y_seed[i],theta_seed[i],mach_seed[i],nu_seed[i]) for i in range(len(x_seed))]
-            floor = Wall(0,0,0)
+            self.floor = Wall(0,0,0)
             self.wall = self.seed.copy()
-####################     Computing    ######################
-        seg = []
-        wall_seg = []
-        gen = []
-        gen.append(self.seed.copy())
-        new_gen=[]
-        new_gen.append(gen[0][0].interWall(floor,length_limit,height_limit))
-        seg.append(Segment(gen[0][0],new_gen[-1]))
-        for node in gen[0][1:]:
-            new_gen.append(node.interKm(new_gen[-1],length_limit,height_limit))
-            seg.append(Segment(node,new_gen[-1]))
-            seg.append(Segment(new_gen[-1],new_gen[-2]))
-        gen.append(new_gen.copy())
-        for i in range(1,theta_step_num):
-            new_gen=[]
-            new_gen.append(gen[i][1].interWall(floor,length_limit,height_limit))
-            seg.append(Segment(gen[i][1],new_gen[-1]))
-            for node in gen[i][2:]:
-                new_gen.append(node.interKm(new_gen[-1],length_limit,height_limit))
-                seg.append(Segment(node,new_gen[-1]))
-                seg.append(Segment(new_gen[-1],new_gen[-2]))
-            gen.append(new_gen.copy())
+            self.xlim = 10*self.throat_radius
+            self.ylim = 10*self.throat_radius
 
-        for generation in gen[1:] :
-            last_node = generation[-1]
-            wall_candidate = last_node.findRoof(self.wall)
-            self.wall.append(wall_candidate)
-            wall_seg.append(Segment(self.wall[-1],self.wall[-2]))
-            seg.append(Segment(self.wall[-1],last_node))
-        
-        self.gen=gen
-        self.seg=seg
-        self.wall_seg=wall_seg
+        if self.ntype=='min':
+            rho=PropsSI("D","P",self.tank_pressure,"T",self.tank_temperature,"Air")
+            throat_surf = self.mass_flow/(rho*sqrt(self.g*self.air_gas_constant*self.tank_temperature))
+            self.throat_radius =sqrt(throat_surf/pi)
+            #Calculating total temp and pressure from (T/P) at the throat
+            self.temp_totale = self.tank_temperature*(1+(self.g-1)*0.5*self.throat_mach*self.throat_mach)
+            self.p_totale = self.tank_pressure*pow((1+(self.g-1)*0.5*self.throat_mach*self.throat_mach),self.g/(self.g-1))
+            #Defining the angles with which to start the calculation
+            self.theta_list = np.linspace(self.theta_bottom,self.theta_top,self.theta_step_num)
+            self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
+            #Creating intial angles at sharp throat
+            self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
+            self.floor = Wall(0,0,0)
+            self.wall = [self.seed[-1]]
+            self.xlim = 10*self.throat_radius
+            self.ylim = 10*self.throat_radius
 
+    def results(self) :
+        return
     def graph(self,show_seg=True):
             plt.figure()
             nozzle_ax = plt.subplot(111)

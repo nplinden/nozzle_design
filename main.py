@@ -13,9 +13,8 @@ throatAngleStep =10
 # throatMinAngle = 0.375
 
 #physical parameters
-throatPressure= 10e5 #Pa
-throatTemperature = 1000 #K
-throatMach = 1
+tankPressure= 10e5 #Pa
+tankTemperature = 1000 #K
 airGasConstant = 287.05 #J.kg-1.K-1
 massFlow = 4 #kg.s-1
 gamma = 1.4
@@ -24,12 +23,9 @@ gamma = 1.4
 display = ['X','Y','mach','thet','nu','mu','T','P']
 
 noz = Nozzle(
-        ntype = "expansion",
-        length_limit = lengthLimit,
-        height_limit = heightLimit,
-        throat_pressure = throatPressure,
-        throat_temperature = throatTemperature,
-        throat_mach = throatMach,
+        ntype = "min",
+        tank_pressure = tankPressure,
+        tank_temperature = tankTemperature,
         air_gas_constant = airGasConstant,
         mass_flow = massFlow,
         g = gamma,
