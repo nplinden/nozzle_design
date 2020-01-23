@@ -16,6 +16,8 @@ class Node:
     #   la valeur de K- sur le noeud
     #   la valeur de K+ sur le noeud
     def __init__(self,x,y,thet,mach,nu=False):
+        self.gen_id=0
+        self.node_id = 0
         self.x = x
         self.y = y
         self.thet = thet
