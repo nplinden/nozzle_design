@@ -82,16 +82,17 @@ class Nozzle :
             x = [i[0] for i in val]
             y = [i[1] for i in val]
             #creating the nozzle's initial points
-            x_seed = np.linspace(x1/25,x1,10)
+            x_seed = np.linspace(x1/25,x1,self.theta_step_num)
             theta_seed = [asin(i/r) for i in x_seed]
             y_seed = [r+y0-r*cos(i) for i in theta_seed]
             nu_seed = theta_seed.copy()
             mach_seed = [HallFunction(i) for i in nu_seed]
             self.seed = [Node(x_seed[i],y_seed[i],theta_seed[i],mach_seed[i],nu_seed[i]) for i in range(len(x_seed))]
             self.floor = Wall(0,0,0)
+            print(len(self.seed))
             self.wall = self.seed.copy()
-            self.xlim = 10*self.throat_radius
-            self.ylim = 10*self.throat_radius
+            self.xlim = 100*self.throat_radius
+            self.ylim = 100*self.throat_radius
 
         if self.ntype=='minimal':
 
@@ -120,8 +121,8 @@ class Nozzle :
             self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
             self.floor = Wall(0,0,0)
             self.wall = [self.seed[-1]]
-            self.xlim = 10*self.throat_radius
-            self.ylim = 10*self.throat_radius
+            self.xlim = 100*self.throat_radius
+            self.ylim = 100*self.throat_radius
     def compute(self):
         seg = []
         wall_seg = []
@@ -137,6 +138,7 @@ class Nozzle :
         gen.append(new_gen.copy())
         for i in range(1,self.theta_step_num):
             new_gen=[]
+            print(gen[i])
             new_gen.append(gen[i][1].interWall(self.floor,self.xlim,self.ylim))
             seg.append(Segment(gen[i][1],new_gen[-1]))
             for node in gen[i][2:]:

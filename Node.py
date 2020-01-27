@@ -167,7 +167,6 @@ class Node:
                     nu = self.Km
                     M = HallFunction(nu)
                     return Node(x,y,0,M)
-
         elif self.y < wall.y + wall.c*(self.x-wall.x):
             a = self.CpSlope
             b = self.y - a*self.x
