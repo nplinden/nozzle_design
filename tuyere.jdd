@@ -5,21 +5,24 @@ physics = {
 'tank_pressure' : 10e5 , #Pa
 'tank_temperature' : 573 , #K
 'specific_gas_constant' : 287.05 , #J/kg/K
-'exit_pressure' : 1e5,  #Mach
+'exit_mach' : 4,  #Mach
 'gamma' : 1.4
 }
 
 geometry = {
-'nozzle_type' : 'expansion' ,
+'nozzle_type' : 'minimal' ,
 'initial_angle' : 0.01 ,
-'step_number' : 10
+'step_number' :20
 }
 
 results = {
 'display_tables' : True ,
 'save_tables' : True ,
-'display_figure' : False ,
+'display_figure' : True ,
 'save_figure' : True
 }
 
-Nozzle(physics,geometry,results)
+
+noz = Nozzle(physics,geometry,results)
+for node in noz.seed :
+    print(node)

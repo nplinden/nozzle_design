@@ -25,7 +25,7 @@ class Node:
             self.mach = mach
             self.nu = PMfunction(mach)
         else :
-            self.mach = m_from_nu(nu)
+            self.mach = HallFunction(nu)
             self.nu = nu
         self.mu = asin(1/self.mach)
         self.Km = self.thet+self.nu
@@ -53,7 +53,7 @@ class Node:
         }
 
     def recalculate(self):
-        self.mach = m_from_nu(self.nu)
+        self.mach = HallFunction(self.nu)
         self.mu = asin(1/self.mach)
         self.Km = self.thet+self.nu
         self.Kp = self.thet-self.nu
@@ -78,13 +78,13 @@ class Node:
         listing += '{:3s}{:<6.3f}'.format('| nu = ',nu)
         listing += '{:3s}{:<6.3f}'.format('| mu = ',mu)
         listing += '{:3s}{:<5.2f}'.format('| Mach = ',self.mach)
-        listing += '{:3s}{:<5.2f}'.format('| Temp = ',self.temp)
-        listing += '{:3s}{:<5.2f}'.format('| pressure = ',self.p*1e-5)
+        #listing += '{:3s}{:<5.2f}'.format('| Temp = ',self.temp)
+        #listing += '{:3s}{:<5.2f}'.format('| pressure = ',self.p*1e-5)
         #optional prints
         #listing += '{:3s}{:<5.2f}'.format('| Km = ',Km)
         #listing += '{:3s}{:<5.2f}'.format('| Kp = ',Kp)
-        #listing += '{:3s}{:5.2f}'.format('CpSlope = ',self.CpSlope)
-        #listing += '{:3s}{:5.2f}'.format('| CmSlope = ',atan(self.CmSlope)*360/(2*pi))
+        listing += '{:3s}{:5.2f}'.format('| CpSlope = ',self.CpSlope)
+        listing += '{:3s}{:5.2f}'.format('| CmSlope = ',atan(self.CmSlope)*360/(2*pi))
         return listing
 
     def get_listing(self):
@@ -128,7 +128,7 @@ class Node:
         if nu < 0 : return False
         thet = 0.5*(node.Km + self.Kp)
         if nu >= 0 :
-            M = m_from_nu(nu)
+            M = HallFunction(nu)
             mu = asin(1/M)
         if self.x == node.x and self.y == node.y : return False
         if self.y ==0 : return False
@@ -142,14 +142,13 @@ class Node:
         c = tan(0.5*(node.thet+thet)+0.5*(node.mu+mu))
         #c = tan(node.thet + node.mu)
         d = node.y - c*node.x
-
         if a != c and b != d :
             x = (d-b)/(a-c)
             y = a*x+b
             if self.x < x < xlim and 0 < y < ylim:
                 nu = 0.5*(self.Km - node.Kp)
                 thet = 0.5*(self.Km + node.Kp)
-                M = m_from_nu(nu)
+                M = HallFunction(nu)
                 return Node(x,y,thet,M)
         return False
 
@@ -166,7 +165,7 @@ class Node:
                 y = round(a*x+b,5)
                 if self.x <= x <= xlim and 0 <= y < ylim:
                     nu = self.Km
-                    M = m_from_nu(nu)
+                    M = HallFunction(nu)
                     return Node(x,y,0,M)
 
         elif self.y < wall.y + wall.c*(self.x-wall.x):
@@ -180,7 +179,7 @@ class Node:
                 if self.x <= x <= limit and 0 <= y <= ylim:
                     theta = atan(wall.c)
                     nu = theta - self.Kp
-                    M = m_from_nu(nu)
+                    M = HallFunction(nu)
                     return Node(x,y,theta,M)
         return False
 
@@ -236,3 +235,4 @@ class Node:
             "T":self.temp,
             "P":self.p*1e-5,
         }
+

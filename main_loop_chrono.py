@@ -1,52 +1,39 @@
-from Nozzle import *
-import time
-t0 = time.process_time()
-#Limits of the canva
-lengthLimit=50
-heightLimit=20
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+import numpy as np
+from CoolProp.CoolProp import PropsSI
 
-#Geometry parameters
-throatRadius = 1
-throatAngle = 18.375
-# throatAngleStep = 37
-# throatMinAngle = 0.375
 
-#physical parameters
-throatPressure= 10e5 #Pa
-throatTemperature = 573 #K
-throatMach = 1
-airGasConstant = 287.5 #J.kg-1.K-1
-massFlow = 4 #kg.s-1
-gamma = 1.4
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+def get_gamma(p,t):
+	return PropsSI("CPMASS", "P", p, "T", t, "Air")/PropsSI("CVMASS", "P", p, "T", t, "Air")
+print(get_gamma(100000,573))
+# Make data.
+P = np.linspace(100000,1000000,10) 
+T = np.linspace(273,2000,10)
+R = np.sqrt(P**2 + T**2)
+g =np.zeros((10,10)) 
+for i in range(len(P)):
+	for j in range(len(T)):
+		g[i][j] = get_gamma(P[i],T[j])
+print(g)
+# Plot the surface.
+T, P = np.meshgrid(T, P)
+surf = ax.plot_surface(P*1e-5, T, g, cmap=cm.coolwarm,
+                       linewidth=0, antialiased=False)
 
-#results parameters
-display = ['X','Y','mach','thet','nu','mu','T','P']
-T=[]
-throatAngleStep = [i for i in range(1,50)]
-for angle in throatAngleStep :
-    t0=time.process_time()
-    noz = Nozzle(
-            length_limit = lengthLimit,
-            height_limit = heightLimit,
-            throat_radius = throatRadius,
-            throat_pressure = throatPressure,
-            throat_temperature = throatTemperature,
-            throat_mach = throatMach,
-            air_gas_constant = airGasConstant,
-            mass_flow = massFlow,
-            g = gamma,
-            theta_top = throatAngle,
-            theta_step_num = angle
-            )
-    t1 = time.process_time()
-    T.append(t1-t0)
+# Customize the z axis.
+ax.set_zlim(1.3, 1.6)
+ax.set_title(r'$\gamma$ en fonction de P et de T')
+ax.set_ylabel("temperature (K)")
+ax.set_xlabel("Pression (Bar)")
+#ax.zaxis.set_major_locator(LinearLocator(10))
+#ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 
-plt.figure()
-ax=plt.subplot(111)
-ax.set_title('Temps de calcul en fonction du nombre de steps')
-ax.set_ylabel('Temps de calcul /s')
-ax.set_xlabel('Nombre de steps')
-ax.plot(throatAngleStep,T,'o--')
+# Add a color bar which maps values to colors.
+#fig.colorbar(surf, shrink=0.5, aspect=5)
+
 plt.show()
-print(throatAngleStep)
-print(T)

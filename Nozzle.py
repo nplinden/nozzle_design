@@ -24,8 +24,8 @@ class Nozzle :
         self.initialize()
         self.compute()
         self.update_therm()
-        self.display()
-
+        if self.results['display_tables'] : self.display()
+        if self.results['display_figure'] : self.graph()
 
 ####################     Computing    ######################
 
@@ -42,7 +42,6 @@ class Nozzle :
             self.exit_pressure = self.physics['exit_pressure']
         self.theta_step_num = self.geometry['step_number']
         self.ntype = self.geometry['nozzle_type']
-        print(self.ntype)
         if self.ntype == 'minimal' :
             self.theta_bottom = self.geometry['initial_angle']
 
@@ -64,10 +63,7 @@ class Nozzle :
             elif 'exit_pressure' in self.physics :
                 desired_mach = sqrt((2/(self.g-1))*(pow(self.p_totale/self.exit_pressure,(self.g-1)/self.g)-1))
                 self.exit_mach = desired_mach
-            print(desired_mach)
             self.theta_top = 360/(2*pi)*PMfunction(desired_mach,self.g)/2
-            print(self.theta_top)
-
 
             #Creating the circle for the expansion region's slope
             theta = np.linspace(-pi/2, 1.5*pi, 1000)
@@ -90,7 +86,7 @@ class Nozzle :
             theta_seed = [asin(i/r) for i in x_seed]
             y_seed = [r+y0-r*cos(i) for i in theta_seed]
             nu_seed = theta_seed.copy()
-            mach_seed = [m_from_nu(i) for i in nu_seed]
+            mach_seed = [HallFunction(i) for i in nu_seed]
             self.seed = [Node(x_seed[i],y_seed[i],theta_seed[i],mach_seed[i],nu_seed[i]) for i in range(len(x_seed))]
             self.floor = Wall(0,0,0)
             self.wall = self.seed.copy()
@@ -106,8 +102,7 @@ class Nozzle :
             #Calculating total temp and pressure from (T/P) at the throat
             self.temp_totale = self.tank_temperature*(1+(self.g-1)*0.5*0)
             self.p_totale = self.tank_pressure*pow((1+(self.g-1)*0.5*0*0),self.g/(self.g-1))
-            self.theta_top = PMfunction(desired_mach,self.g)/2
-            self.theta_top *= 360/(2*pi)
+
 
             #calculating the final expansion angle
             if 'exit_mach' in self.physics :
@@ -115,8 +110,9 @@ class Nozzle :
             elif 'exit_pressure' in self.physics :
                 desired_mach = sqrt((2/(self.g-1))*(pow(self.p_totale/self.exit_pressure,(self.g-1)/self.g)-1))
                 self.exit_mach = desired_mach
-                print(desired_mach)
 
+            self.theta_top = PMfunction(desired_mach,self.g)/2
+            self.theta_top *= 360/(2*pi)
             #Defining the angles with which to start the calculation
             self.theta_list = np.linspace(self.theta_bottom,self.theta_top,self.theta_step_num)
             self.theta_list = [i * 2 * pi / (360) for i in  self.theta_list]
@@ -173,6 +169,7 @@ class Nozzle :
     def display(self) :
         init = [
                 ['Type de tuyère', str(self.ntype)],
+                ['Rayon du col', '{:.5g}'.format(self.throat_radius)],
                 ['Débit massique (kg/s)', str(self.mass_flow)],
                 ['Température totale (K)', str(self.tank_temperature)],
                 ['Pression totale (bar)', str(self.tank_pressure*1e-5)],

@@ -1,2 +1,7 @@
+*.png
+*.pyc
 __pycache__
 results
+3dtest.py
+*.swp
+coolprop/
