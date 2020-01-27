@@ -10,22 +10,27 @@ from Wall import *
 import csv
 from CoolProp.CoolProp import PropsSI
 from packages.Htable import *
+import time
 class Nozzle :
 
     def __init__(self,
                 physics,
                 geometry,
                 results):
+        t0 = time.time()
         self.physics = physics
         self.geometry = geometry
         self.results = results
 
         self.check()
         self.initialize()
+        self.draw()
         self.compute()
-        self.update_therm()
         if self.results['display_tables'] : self.display()
         if self.results['display_figure'] : self.graph()
+        t1 = time.time()
+        self.comp_time = t1 - t0
+        self.charac['comp_time'] = self.comp_time
 
 ####################     Computing    ######################
 
@@ -89,7 +94,6 @@ class Nozzle :
             mach_seed = [HallFunction(i) for i in nu_seed]
             self.seed = [Node(x_seed[i],y_seed[i],theta_seed[i],mach_seed[i],nu_seed[i]) for i in range(len(x_seed))]
             self.floor = Wall(0,0,0)
-            print(len(self.seed))
             self.wall = self.seed.copy()
             self.xlim = 100*self.throat_radius
             self.ylim = 100*self.throat_radius
@@ -123,7 +127,7 @@ class Nozzle :
             self.wall = [self.seed[-1]]
             self.xlim = 100*self.throat_radius
             self.ylim = 100*self.throat_radius
-    def compute(self):
+    def draw(self):
         seg = []
         wall_seg = []
         gen = []
@@ -138,7 +142,6 @@ class Nozzle :
         gen.append(new_gen.copy())
         for i in range(1,self.theta_step_num):
             new_gen=[]
-            print(gen[i])
             new_gen.append(gen[i][1].interWall(self.floor,self.xlim,self.ylim))
             seg.append(Segment(gen[i][1],new_gen[-1]))
             for node in gen[i][2:]:
@@ -161,12 +164,19 @@ class Nozzle :
                 node.gen_id = i
                 node.node_id = j+1
 
-    def update_therm(self) :
+    def compute(self) :
         for node in self.wall :
             node.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
         for generation in self.gen :
             for node in generation :
                 node.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
+        self.area_ratio = self.wall[-1].y/self.wall[0].y
+        self.charac = {
+                'area_ratio' : self.area_ratio ,
+                'exit_mach' : self.wall[-1].mach ,
+                'exit_pressure' : self.wall[-1].p ,
+                }
+    
 
     def display(self) :
         init = [
@@ -220,6 +230,31 @@ class Nozzle :
             nozzle_ax.set_aspect('equal')
             nozzle_ax.grid()
             plt.show()
+
+    def iterate(physics,geometry,results) :
+        iteration = []
+        for parameter in physics.keys() :
+            if type(physics[parameter]) is list :
+                iterande = parameter 
+                iter_list = physics[parameter]
+                iteration_dic = physics.copy()
+                for value in iter_list :
+                    iteration_dic[iterande] = value
+                    iteration.append(Nozzle(iteration_dic,geometry,results))
+
+        for parameter in geometry.keys() :
+            if type(geometry[parameter]) is list :
+                iterande = parameter
+                iter_list = geometry[parameter]
+                iteration_dic = geometry
+                for value in iter_list :
+                    iteration_dic[iterande] = value
+                    iteration.append(Nozzle(physics,iteration_dic,results))
+        if 'iter_out_param' in results.keys() :
+            for i, noz in enumerate(iteration) :
+                if results['display_figure'] : noz.graph()
+                print(f'{iter_list[i]}, {noz.charac[results["iter_out_param"]]}')
+        return iteration
 
     def save_contour(self,result_path='results/',catia=False):
         if catia :
