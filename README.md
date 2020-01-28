@@ -85,3 +85,5 @@ results = {
 },
 )
 ```
+An example of such an iteration is the following graph :
+![Alt text](images/validation.png "Iteration example")
