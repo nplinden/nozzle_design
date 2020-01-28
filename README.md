@@ -1,6 +1,15 @@
 # nozzle_design
-This code was develloped by Nicolas LINDEN and Charles MALITOURNE as part of a third year qualifying project at École Nationale Supérieur d'Arts et Métiers. Its goal is to help design the geometry of supersonic nozzles. It is based on the method of characteristics and is in part inspired by the algorithm described in John D. Anderson's book 'Fundamentals of Aerodynamics, Fifth Edition'. It uses an ideal gas model and make the assumption of a iso-entropic flow, and allows the user to modify the nozzle's parameters to their liking. It makes use of the CoolProp python3 wrapper available at coolprop.org. Development is still ongoing but basic option are all available.
+This code was develloped by Nicolas LINDEN and Charles MALITOURNE as part of a third year qualifying project at École Nationale Supérieur d'Arts et Métiers. Its goal is to help design the geometry of supersonic nozzles. It is based on the method of characteristics and is in part inspired by the algorithm described in John D. Anderson's book 'Fundamentals of Aerodynamics, Fifth Edition'. It uses an ideal gas model and make the assumption of an iso-entropic flow, and allows the user to modify the nozzle's parameters to their liking. It makes use of the CoolProp python3 wrapper available at coolprop.org. Development is still ongoing but basic options are all available.
 
+The code allows you to design two types of nozzle : 
+* standard nozzle with an expansion section :
+
+
+![Alt text](images/tuyere1.png "")
+
+* minimum length nozzles :
+
+![Alt text](images/tuyere2.png "")
 ## Required Python3 library
 This code only work on python3.
 Necessary packages are : CoolProp, csv, matplotlib, numpy, math, time.
@@ -33,7 +42,7 @@ results = {
 },
 )
 ```
-This example is provided in the tuyere.jdd file in the repository. To launch the program simply use the ./file_name command (Don't forget to chmod it adequatly).
+This example is provided in the tuyere.jdd file in the repository. To launch the program simply use the ./file_name command (Don't forget to chmod it adequately).
 You should adapt the python3 path to your system, or alternatively delete the line and just use the "python3 file_name" command.
 You can then modify the parameters to your liking.
 
@@ -46,10 +55,11 @@ The physics dictionnary contains the physical characteristic of the nozzle, they
 * Alternatively, you can use the exit_mach parameter to specify a Mach number at the nozzle's exit (Don't use both exit pressure and Mach parameters, this would not work properly)
 * 'gamma' is the Heat capacity ratio, equal to 1.4 for diatomic real gases, and to 1.67 for monoatomic real gases. You can use CoolProp to get more values for any fluid.
 ### Geometry dictionnary
-These parameters partain to the nozzle geometry, and to the algorithme's initial data line.
+These parameters partain to the nozzle geometry, and to the algorithm's initial data line.
 * The 'nozzle_type' parameter allows you to choose to create either a minimal length nozzle, or a standard nozzle with an expansion section. keyword are 'minimal' and 'expansion'.
 * 'initial_angle' allows you to define the angle of your very first right-running characteristics, a smaller angle will results in a better precision in the region just right of the initial data line. 
 * 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time. The following graph represent the computation time with respect to the number of steps.
+
 ![Alt text](images/complexity.png "Complexity")
 ### Results dictionnary
 * 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable classe provided with the files to display. It work well with the monospace regular font, not so much with others. This will be refactored to work with any font.
