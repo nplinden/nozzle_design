@@ -1,5 +1,5 @@
 # nozzle_design
-This code was develloped by Nicolas LINDEN and Charles MALITOURNE as part of a third year qualifying project at École Nationale Supérieur d'Arts et Métiers. Its goal is to help design the geometry of supersonic nozzles. It is based on the method of characteristics and is in part inspired by the algorithm described in John D. Anderson's book 'Fundamentals of Aerodynamics, Fifth Edition'. It uses an ideal gas model and allows the user to modify the nozzle's parameters to their liking. It makes use of the CoolProp python3 wrapper available at coolprop.org. Development is still ongoing but basic option are all available.
+This code was develloped by Nicolas LINDEN and Charles MALITOURNE as part of a third year qualifying project at École Nationale Supérieur d'Arts et Métiers. Its goal is to help design the geometry of supersonic nozzles. It is based on the method of characteristics and is in part inspired by the algorithm described in John D. Anderson's book 'Fundamentals of Aerodynamics, Fifth Edition'. It uses an ideal gas model and make the assumption of a iso-entropic flow, and allows the user to modify the nozzle's parameters to their liking. It makes use of the CoolProp python3 wrapper available at coolprop.org. Development is still ongoing but basic option are all available.
 
 ## Required Python3 library
 This code only work on python3.
@@ -49,7 +49,7 @@ The physics dictionnary contains the physical characteristic of the nozzle, they
 These parameters partain to the nozzle geometry, and to the algorithme's initial data line.
 * The 'nozzle_type' parameter allows you to choose to create either a minimal length nozzle, or a standard nozzle with an expansion section. keyword are 'minimal' and 'expansion'.
 * 'initial_angle' allows you to define the angle of your very first right-running characteristics, a smaller angle will results in a better precision in the region just right of the initial data line. 
-* 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time.
+* 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time. The following graph represent the computation time with respect to the number of steps.
 ![Alt text](images/complexity.png "Complexity")
 ### Results dictionnary
 * 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable classe provided with the files to display. It work well with the monospace regular font, not so much with others. This will be refactored to work with any font.
