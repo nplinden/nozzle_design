@@ -5,11 +5,11 @@ The code allows you to design two types of nozzle :
 * standard nozzle with an expansion section :
 
 
-![Alt text](images/tuyere1bis.png "")
+![Alt text](images/tuyere1bis.PNG "")
 
 * minimum length nozzles :
 
-![Alt text](images/tuyere2bis.png "")
+![Alt text](images/tuyere2bis.PNG "")
 ## Required Python3 library
 This code only work on python3.
 Necessary packages are : CoolProp, csv, matplotlib, numpy, math, time.
