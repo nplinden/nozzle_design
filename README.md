@@ -39,17 +39,17 @@ You can then modify the parameters to your liking.
 
 ### Physics dictionnary
 The physics dictionnary contains the physical characteristic of the nozzle, they are :
-⋅⋅⋅* The 'mass_flow' going through the nozzle
-⋅⋅⋅* The 'tank_pressure' and 'tank_temperature' are the P/T condition in the tank upstream from your nozzle, this is used in the code as a way to define totale temperature and pressure (i.e. the dynamic Pressure (resp. Temperature) is zero for a Mach number of zero)
-⋅⋅⋅* The 'specific_gas_constant' of the fluid, the default 287.05 J/kg/K is for Air. You can find data for other fluids in the CoolProp library.
-⋅⋅⋅* 'exit_pressure' specifies the pressure you want at the nozzle's exit.
-⋅⋅⋅* Alternatively, you can use the exit_mach parameter to specify a Mach number at the nozzle's exit (Don't use both exit pressure and Mach parameters, this would not work properly)
-⋅⋅⋅* 'gamma' is the Heat capacity ratio, equal to 1.4 for diatomic real gases, and to 1.67 for monoatomic real gases. You can use CoolProp to get more values for any fluid.
+⋅⋅* The 'mass_flow' going through the nozzle
+⋅⋅* The 'tank_pressure' and 'tank_temperature' are the P/T condition in the tank upstream from your nozzle, this is used in the code as a way to define totale temperature and pressure (i.e. the dynamic Pressure (resp. Temperature) is zero for a Mach number of zero)
+⋅⋅* The 'specific_gas_constant' of the fluid, the default 287.05 J/kg/K is for Air. You can find data for other fluids in the CoolProp library.
+⋅⋅* 'exit_pressure' specifies the pressure you want at the nozzle's exit.
+⋅⋅* Alternatively, you can use the exit_mach parameter to specify a Mach number at the nozzle's exit (Don't use both exit pressure and Mach parameters, this would not work properly)
+⋅⋅* 'gamma' is the Heat capacity ratio, equal to 1.4 for diatomic real gases, and to 1.67 for monoatomic real gases. You can use CoolProp to get more values for any fluid.
 ### Geometry dictionnary
 These parameters partain to the nozzle geometry, and to the algorithme's initial data line.
-⋅⋅⋅* The 'nozzle_type' parameter allows you to choose to create either a minimal length nozzle, or a standard nozzle with an expansion section. keyword are 'minimal' and 'expansion'.
-⋅⋅⋅* 'initial_angle' allows you to define the angle of your very first right-running characteristics, a smaller angle will results in a better precision in the region just right of the initial data line. 
-⋅⋅⋅* 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time.
+⋅⋅* The 'nozzle_type' parameter allows you to choose to create either a minimal length nozzle, or a standard nozzle with an expansion section. keyword are 'minimal' and 'expansion'.
+⋅⋅* 'initial_angle' allows you to define the angle of your very first right-running characteristics, a smaller angle will results in a better precision in the region just right of the initial data line. 
+⋅⋅* 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time.
 ### Results dictionnary
-⋅⋅⋅* 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable classe provided with the files to display. It work well with the monospace regular font, not so much with others. This will be refactored to work with any font.
-⋅⋅⋅* 'save_table' does not work yet
+⋅⋅* 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable classe provided with the files to display. It work well with the monospace regular font, not so much with others. This will be refactored to work with any font.
+⋅⋅* 'save_table' does not work yet
