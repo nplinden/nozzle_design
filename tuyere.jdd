@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 from Nozzle import *
-Nozzle(
+Nozzle.iterate(
 physics = {
 'mass_flow' : 4 ,  #kg/s
 'tank_pressure' : 10e5 , #Pa
 'tank_temperature' : 573 , #K
 'specific_gas_constant' : 287.05 , #J/kg/K
-'exit_pressure' : 1e5,  #Mach
+'exit_mach' : [2,3,4,5],  #Mach
 'gamma' : 1.4
 },
 geometry = {
@@ -22,4 +22,3 @@ results = {
 'iter_out_param' : 'area_ratio',
 },
 )
-#noz = Nozzle(physics,geometry,results)
