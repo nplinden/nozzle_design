@@ -1,25 +1,25 @@
 #!/usr/bin/python3
 from Nozzle import *
-Nozzle.iterate(
+Nozzle(
 physics = {
 'mass_flow' : 4 ,  #kg/s
 'tank_pressure' : 10e5 , #Pa
 'tank_temperature' : 573 , #K
 'specific_gas_constant' : 287.05 , #J/kg/K
-'exit_mach' : 2.4,  #Mach
+'exit_pressure' : 1e5,  #Mach
 'gamma' : 1.4
 },
 geometry = {
 'nozzle_type' : 'expansion' ,
 'initial_angle' : 0.01 ,
-'step_number' : list(np.arange(5,100,1)),
+'step_number' : 100,
 },
 results = {
-'display_tables' : False ,
+'display_tables' : True ,
 'save_tables' : True ,
 'display_figure' : False ,
 'save_figure' : True ,
-'iter_out_param' : 'comp_time',
+'iter_out_param' : 'area_ratio',
 },
 )
 #noz = Nozzle(physics,geometry,results)

@@ -95,8 +95,8 @@ class Nozzle :
             self.seed = [Node(x_seed[i],y_seed[i],theta_seed[i],mach_seed[i],nu_seed[i]) for i in range(len(x_seed))]
             self.floor = Wall(0,0,0)
             self.wall = self.seed.copy()
-            self.xlim = 100*self.throat_radius
-            self.ylim = 100*self.throat_radius
+            self.xlim = 1000*self.throat_radius
+            self.ylim = 1000*self.throat_radius
 
         if self.ntype=='minimal':
 
@@ -125,8 +125,8 @@ class Nozzle :
             self.seed = [ Node(0,self.throat_radius,i,1,nu=i) for i in self.theta_list ]
             self.floor = Wall(0,0,0)
             self.wall = [self.seed[-1]]
-            self.xlim = 100*self.throat_radius
-            self.ylim = 100*self.throat_radius
+            self.xlim = 1000*self.throat_radius
+            self.ylim = 1000*self.throat_radius
     def draw(self):
         seg = []
         wall_seg = []
