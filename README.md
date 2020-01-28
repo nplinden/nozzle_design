@@ -61,6 +61,8 @@ These parameters partain to the nozzle geometry, and to the algorithm's initial 
 * 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time. The following graph represent the computation time with respect to the number of steps.
 
 ![Alt text](images/complexity.png "Complexity")
+
+I don't know the reasons for the spike yet, however computing a single noz remains very quick in terms of calculations.
 ### Results dictionnary
 * 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable classe provided with the files to display. It work well with the monospace regular font, not so much with others. This will be refactored to work with any font.
 * 'save_table' does not work yet
