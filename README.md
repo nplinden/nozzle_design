@@ -3,14 +3,13 @@ This code was develloped by Nicolas LINDEN and Charles MALITOURNE as part of a t
 
 The code allows you to design two types of nozzle : 
 * standard nozzle with an expansion section :
+
 ![Alt text](images/tuyere1bis.PNG "")
-<div style="text-align:center">
-<img src="images/tuyere1bis.PNG" />
-</div>
 
 * minimum length nozzles :
 
 ![Alt text](images/tuyere2bis.PNG "")
+
 ## Required Python3 library
 This code only work on python3.
 Necessary packages are : CoolProp, csv, matplotlib, numpy, math, time.
