@@ -3,9 +3,9 @@ This code was develloped by Nicolas LINDEN and Charles MALITOURNE as part of a t
 
 The code allows you to design two types of nozzle : 
 * standard nozzle with an expansion section :
-
-<div style="text-align:center">
 ![Alt text](images/tuyere1bis.PNG "")
+<div style="text-align:center">
+<img src="images/tuyere1bis.PNG" />
 </div>
 
 * minimum length nozzles :
