@@ -133,25 +133,25 @@ class Nozzle :
         gen = []
         gen.append(self.seed.copy())
         new_gen=[]
-        new_gen.append(gen[0][0].interWall(self.floor,self.xlim,self.ylim))
+        new_gen.append(gen[0][0].findAxis(self.floor,self.xlim,self.ylim))
         seg.append(Segment(gen[0][0],new_gen[-1]))
         for node in gen[0][1:]:
-            new_gen.append(node.interKm(new_gen[-1],self.xlim,self.ylim))
+            new_gen.append(node.intersect(new_gen[-1],self.xlim,self.ylim))
             seg.append(Segment(node,new_gen[-1]))
             seg.append(Segment(new_gen[-1],new_gen[-2]))
         gen.append(new_gen.copy())
         for i in range(1,self.theta_step_num):
             new_gen=[]
-            new_gen.append(gen[i][1].interWall(self.floor,self.xlim,self.ylim))
+            new_gen.append(gen[i][1].findAxis(self.floor,self.xlim,self.ylim))
             seg.append(Segment(gen[i][1],new_gen[-1]))
             for node in gen[i][2:]:
-                new_gen.append(node.interKm(new_gen[-1],self.xlim,self.ylim))
+                new_gen.append(node.intersect(new_gen[-1],self.xlim,self.ylim))
                 seg.append(Segment(node,new_gen[-1]))
                 seg.append(Segment(new_gen[-1],new_gen[-2]))
             gen.append(new_gen.copy())
         for generation in gen[1:] :
             last_node = generation[-1]
-            wall_candidate = last_node.findRoof(self.wall)
+            wall_candidate = last_node.findContour(self.wall)
             self.wall.append(wall_candidate)
             wall_seg.append(Segment(self.wall[-1],self.wall[-2]))
             seg.append(Segment(self.wall[-1],last_node))

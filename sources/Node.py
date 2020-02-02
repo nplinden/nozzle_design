@@ -87,43 +87,12 @@ class Node:
         listing += '{:3s}{:5.2f}'.format('| CmSlope = ',atan(self.CmSlope)*360/(2*pi))
         return listing
 
-    def get_listing(self):
-        thet = self.thet*(360/(2*pi))
-        nu = self.nu*(360/(2*pi))
-        mu = self.mu*(360/(2*pi))
-        Km = self.Km*(360/(2*pi))
-        Kp = self.Kp*(360/(2*pi))
-        listing = '{:3s}{:<5.2f}'.format('X = ', self.x)
-        listing += '{:3s}{:<5.2f}'.format('| Y = ',self.y)
-        listing += '{:3s}{:<6.3f}'.format('| Theta = ',thet)
-        listing += '{:3s}{:<6.3f}'.format('| nu = ',nu)
-        listing += '{:3s}{:<6.3f}'.format('| mu = ',mu)
-        listing += '{:3s}{:<5.2f}'.format('| Mach = ',self.mach)
-        listing += '{:3s}{:<5.2f}'.format('| Temp = ',self.temp)
-        listing += '{:3s}{:<5.2f}'.format('| pressure = ',self.p*1e-5)
-        #optional prints
-        #listing += '{:3s}{:<5.2f}'.format('| Km = ',Km)
-        #listing += '{:3s}{:<5.2f}'.format('| Kp = ',Kp)
-        #listing += '{:3s}{:5.2f}'.format('CpSlope = ',self.CpSlope)
-        #listing += '{:3s}{:5.2f}'.format('| CmSlope = ',atan(self.CmSlope)*360/(2*pi))
-        return listing
 
     def graphNode(self,ax,style='o'):
         ax.plot(self.x,self.y,style)
         return
 
-    def graphChar(self,ax):
-        if abs(self.CpSlope) > 1000 :
-            plt.plot([0,10],[0,0],'k-')
-            return
-        X=[self.x,self.x+10]
-        Y=[self.y,self.y+10*self.CpSlope]
-        Y2=[self.y,self.y+10*self.CmSlope]
-        ax.plot(X,Y2,':k')
-        return
-
-
-    def interKm(self,node,xlim,ylim):
+    def intersect(self,node,xlim,ylim):
         nu = 0.5*(node.Km - self.Kp)
         if nu < 0 : return False
         thet = 0.5*(node.Km + self.Kp)
@@ -133,14 +102,10 @@ class Node:
         if self.x == node.x and self.y == node.y : return False
         if self.y ==0 : return False
 
-        #a = self.CmSlope
         a = tan(0.5*(self.thet+thet)-0.5*(self.mu+mu))
-        #a = tan(self.thet -self.mu)
         b = self.y - a*self.x
 
-        #c = node.CpSlope
         c = tan(0.5*(node.thet+thet)+0.5*(node.mu+mu))
-        #c = tan(node.thet + node.mu)
         d = node.y - c*node.x
         if a != c and b != d :
             x = (d-b)/(a-c)
@@ -152,7 +117,8 @@ class Node:
                 return Node(x,y,thet,M)
         return False
 
-    def interWall(self,wall,xlim,ylim,limit=False):
+    def findAxis(self,wall,xlim,ylim,limit=False):
+        #Cette méthode trouve la position de l'intersection d'une caractéristique avec l'axe de la tuyère
         ywall =  wall.y + wall.c*(self.x-wall.x)
         if limit == False : limit = xlim
         if self.y > wall.y + wall.c*(self.x-wall.x):
@@ -184,12 +150,12 @@ class Node:
 
 
 
-    def findRoof(self,wallList) :
+    def findContour(self,wallList) :
+        #Cette méthode calcule la position de l'intersection d'une caractéristique avec le contour de la tuyère
         targetWall = wallList[-1]
         thet_intersect = self.thet
         thet_contour = targetWall.thet
         avg_slope = 0.5*( thet_contour + thet_intersect )
-        #avg_slope = thet_contour
 
         a = self.CpSlope
         b = self.y - a*self.x
