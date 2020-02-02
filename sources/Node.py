@@ -2,8 +2,7 @@ from math import *
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
-from variousFunctions import HallFunction, PrandtlFunction, machAngle
-import sympy as spy
+from sources.variousFunctions import HallFunction, PrandtlFunction, machAngle
 class Node:
     #On définit la classe node qui se caractérise par :
     #   la position (x,y) du noeud

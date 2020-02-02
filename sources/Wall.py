@@ -1,10 +1,4 @@
-from math import *
-import numpy as np
-from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
-from variousFunctions import *
-import sympy as spy
-from random import *
 
 class Wall:
     

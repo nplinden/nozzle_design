@@ -1,9 +1,5 @@
-from math import *
-import numpy as np
-from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
-from variousFunctions import *
-import sympy as spy
+
 class Segment:
     
     def __init__(self,firstNode,secondNode):

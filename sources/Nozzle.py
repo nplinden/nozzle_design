@@ -1,11 +1,12 @@
 from CoolProp.CoolProp import PropsSI
+import matplotlib.pyplot as plt
 from math import *
-from variousFunctions import HallFunction, PrandtlFunction, machAngle
-from Node import Node
-from Segment import Segment
-from Wall import Wall
-from Htable import Htable
-from Ftable import Ftable
+from sources.variousFunctions import HallFunction, PrandtlFunction, machAngle
+from sources.Node import Node
+from sources.Segment import Segment
+from sources.Wall import Wall
+from sources.Htable import Htable
+from sources.Ftable import Ftable
 import numpy as np
 import csv
 import time
@@ -29,7 +30,16 @@ class Nozzle :
         t1 = time.time()
         self.comp_time = t1 - t0
         self.charac['comp_time'] = self.comp_time
+        if self.results['save_contour'] : 
+            if self.results['save_format'] == 'CATIA' :
+                self.save_contour(catia=True)
+            elif self.results['save_format'] == 'csv' :
+                self.save_contour(catia=False)
+            else : 
+                self.save_contour(catia=False)
 
+        if self.results['save_figure'] :
+            self.save_graph()
 ####################     Computing    ######################
 
 #getting the right arguments from the input dicts
@@ -48,7 +58,6 @@ class Nozzle :
         self.ntype = self.geometry['nozzle_type']
         if self.ntype == 'minimal' :
             self.theta_bottom = self.geometry['initial_angle']
-
 #computing additionnal parameters for the nozzle
     def initialize(self) :
         if self.ntype=='expansion' :
@@ -232,7 +241,20 @@ class Nozzle :
             nozzle_ax.set_aspect('equal')
             nozzle_ax.grid()
             plt.show()
+    
+    def save_graph(self,show_seg=True):
+            plt.figure()
+            nozzle_ax = plt.subplot(111)
+            nozzle_ax.plot([i.x for i in self.wall],[i.y for i in self.wall],'b-')
+            # nozzle_ax.plot([i.x for i in self.wall],[-i.y for i in self.wall],'b-')
+            if show_seg :
+                for i in self.seg :
+                    i.graphSegment(nozzle_ax)
+            nozzle_ax.plot([0,self.wall[-1].x],[0,0],'k:')
 
+            nozzle_ax.set_aspect('equal')
+            nozzle_ax.grid()
+            plt.savefig('results/nozzle.png')
 #iteration module
     def iterate(physics,geometry,results) :
         iteration = []
