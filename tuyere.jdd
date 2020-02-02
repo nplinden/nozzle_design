@@ -17,7 +17,7 @@ geometry = {
 results = {
 'display_tables' : True ,
 'save_contour' : True ,
-'save_format' : 'CATIA',
+'contour_format' : 'CATIA',
 'display_figure' : False ,
 'save_figure' : True ,
 #'iter_out_param' : 'area_ratio',

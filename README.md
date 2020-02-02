@@ -59,22 +59,39 @@ You can then modify the parameters to your liking.
 
 
 The physics dictionnary contains the physical characteristic of the nozzle, they are :
-* The 'mass_flow' going through the nozzle
-* The 'tank_pressure' and 'tank_temperature' are the P/T condition in the tank upstream from your nozzle, this is used in the code as a way to define totale temperature and pressure (i.e. the dynamic Pressure (resp. Temperature) is zero for a Mach number of zero)
-* The 'specific_gas_constant' of the fluid, the default 287.05 J/kg/K is for Air. You can find data for other fluids in the CoolProp library.
-* 'exit_pressure' specifies the pressure you want at the nozzle's exit.
-* Alternatively, you can use the exit_mach parameter to specify a Mach number at the nozzle's exit (Don't use both exit pressure and Mach parameters, this would not work properly)
-* 'gamma' is the Heat capacity ratio, equal to 1.4 for diatomic real gases, and to 1.67 for monoatomic real gases. You can use CoolProp to get more values for any fluid.
+* The mass flow going through the nozzle
+* The tank pressure and temperature are the P/T condition in the tank upstream from your nozzle, this is used in the code as a way to define totale temperature and pressure (i.e. the dynamic Pressure (resp. Temperature) is zero for a Mach number of zero)
+* The specific gas constant of the fluid, the default 287.05 J/kg/K is for Air. You can find data for other fluids in the CoolProp library.
+* The exit pressure you want at the nozzle's exit.
+* Alternatively, you can use the exit_mach parameter to specify a Mach number at the nozzle's exit (Don't use both exit pressure and Mach parameters)
+* gamma is the Heat capacity ratio, equal to 1.4 for diatomic real gases, and to 1.67 for monoatomic real gases. You can use CoolProp to get more values for any fluid.
+
 ### Geometry dictionnary
+
+|   Parameter   |         Values         |
+|:-------------:|:----------------------:|
+|  nozzle_type  | 'expansion', 'minimal' |
+| initial_angle |          0.01          |
+|  step_number  |           int          |
+
 These parameters pertain to the nozzle geometry, and to the algorithm's initial data line.
-* The 'nozzle_type' parameter allows you to choose to create either a minimal length nozzle, or a standard nozzle with an expansion section. keyword are 'minimal' and 'expansion'.
-* 'initial_angle' allows you to define the angle of your very first right-running characteristics, a smaller angle will results in a better precision in the region just right of the initial data line. 
-* 'step_number' allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time. The following graph represent the computation time with respect to the number of steps.
+* The nozzle type parameter allows you to choose to create either a minimal length nozzle, or a standard nozzle with an expansion section.
+* initial_angle allows you to define the angle of your very first right-running characteristics, a smaller angle will results in a better precision in the region just right of the initial data line. 
+* step_number allows you to choose to number of initial node in the initial data line, move step means better precision, but also longer computation time. The following graph represent the computation time with respect to the number of steps.
 
 ![Alt text](images/complexity.png "Complexity")
 
-I don't know the reasons for the spike yet, however computing a single noz remains very quick in terms of calculations.
+
 ### Results dictionnary
+
+|    Parameter   |     Values     |
+|:--------------:|:--------------:|
+| display_tables |   True, False  |
+|  save_contour  |   True, False  |
+| contour_format | 'csv', 'CATIA' |
+| display_figure |   True, False  |
+|   save_figure  |   True, False  |
+
 * 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable class provided with the files. It works well with the monospace regular font. 
 * 'save_contour' allows you to save the nozzle's contour as a csv file to the results folder.
 * 'save_format' lets you choose which format you want for your saved contour. The two possibilities are 'CATIA' and 'csv', the first produces a file easy to import in CATIA, the latter just saves the values.

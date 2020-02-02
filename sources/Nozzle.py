@@ -31,9 +31,9 @@ class Nozzle :
         self.comp_time = t1 - t0
         self.charac['comp_time'] = self.comp_time
         if self.results['save_contour'] : 
-            if self.results['save_format'] == 'CATIA' :
+            if self.results['contour_format'] == 'CATIA' :
                 self.save_contour(catia=True)
-            elif self.results['save_format'] == 'csv' :
+            elif self.results['contour_format'] == 'csv' :
                 self.save_contour(catia=False)
             else : 
                 self.save_contour(catia=False)
