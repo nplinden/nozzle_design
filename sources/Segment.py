@@ -4,7 +4,6 @@ from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 from variousFunctions import *
 import sympy as spy
-from random import *
 class Segment:
     
     def __init__(self,firstNode,secondNode):

@@ -1,15 +1,13 @@
-from math import *
-from packages.Ftable import *
-import numpy as np
-from scipy.optimize import fsolve
-import matplotlib.pyplot as plt
-from variousFunctions import *
-from Node import *
-from Segment import *
-from Wall import *
-import csv
 from CoolProp.CoolProp import PropsSI
-from packages.Htable import *
+from math import *
+from variousFunctions import HallFunction, PrandtlFunction, machAngle
+from Node import Node
+from Segment import Segment
+from Wall import Wall
+from Htable import Htable
+from Ftable import Ftable
+import numpy as np
+import csv
 import time
 class Nozzle :
 
@@ -34,6 +32,7 @@ class Nozzle :
 
 ####################     Computing    ######################
 
+#getting the right arguments from the input dicts
     def check(self) :
         self.tank_pressure = self.physics['tank_pressure']
         self.tank_temperature = self.physics['tank_temperature']
@@ -50,6 +49,7 @@ class Nozzle :
         if self.ntype == 'minimal' :
             self.theta_bottom = self.geometry['initial_angle']
 
+#computing additionnal parameters for the nozzle
     def initialize(self) :
         if self.ntype=='expansion' :
 
@@ -68,7 +68,7 @@ class Nozzle :
             elif 'exit_pressure' in self.physics :
                 desired_mach = sqrt((2/(self.g-1))*(pow(self.p_totale/self.exit_pressure,(self.g-1)/self.g)-1))
                 self.exit_mach = desired_mach
-            self.theta_top = 360/(2*pi)*PMfunction(desired_mach,self.g)/2
+            self.theta_top = 360/(2*pi)*PrandtlFunction(desired_mach,self.g)/2
 
             #Creating the circle for the expansion region's slope
             theta = np.linspace(-pi/2, 1.5*pi, 1000)
@@ -116,7 +116,7 @@ class Nozzle :
                 desired_mach = sqrt((2/(self.g-1))*(pow(self.p_totale/self.exit_pressure,(self.g-1)/self.g)-1))
                 self.exit_mach = desired_mach
 
-            self.theta_top = PMfunction(desired_mach,self.g)/2
+            self.theta_top = PrandtlFunction(desired_mach,self.g)/2
             self.theta_top *= 360/(2*pi)
             #Defining the angles with which to start the calculation
             self.theta_list = np.linspace(self.theta_bottom,self.theta_top,self.theta_step_num)
@@ -127,6 +127,7 @@ class Nozzle :
             self.wall = [self.seed[-1]]
             self.xlim = 1000*self.throat_radius
             self.ylim = 1000*self.throat_radius
+#drawing the nozzle using the method of characteristics
     def draw(self):
         seg = []
         wall_seg = []
@@ -164,6 +165,7 @@ class Nozzle :
                 node.gen_id = i
                 node.node_id = j+1
 
+#updating the thermodynamics parameters for all nodes
     def compute(self) :
         for node in self.wall :
             node.compute_therm_parameters(self.temp_totale,self.p_totale,self.g)
@@ -177,7 +179,7 @@ class Nozzle :
                 'exit_pressure' : self.wall[-1].p ,
                 }
     
-
+#displaying the results
     def display(self) :
         init = [
                 ['Type de tuyère', str(self.ntype)],
@@ -216,7 +218,7 @@ class Nozzle :
         table_contour.disp()
         return
 
-
+#graphing the nozzle
     def graph(self,show_seg=True):
             plt.figure()
             nozzle_ax = plt.subplot(111)
@@ -231,6 +233,7 @@ class Nozzle :
             nozzle_ax.grid()
             plt.show()
 
+#iteration module
     def iterate(physics,geometry,results) :
         iteration = []
         for parameter in physics.keys() :
@@ -256,6 +259,7 @@ class Nozzle :
                 print(f'{iter_list[i]}, {noz.charac[results["iter_out_param"]]}')
         return iteration
 
+#to save the nozzle in a csv format for use with CATIA V5
     def save_contour(self,result_path='results/',catia=False):
         if catia :
             with open(result_path+'contour_catia.csv', mode='w',newline='') as csv_file:

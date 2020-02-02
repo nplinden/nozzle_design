@@ -2,9 +2,8 @@ from math import *
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
-from variousFunctions import *
+from variousFunctions import HallFunction, PrandtlFunction, machAngle
 import sympy as spy
-from random import *
 class Node:
     #On définit la classe node qui se caractérise par :
     #   la position (x,y) du noeud
@@ -23,7 +22,7 @@ class Node:
         self.thet = thet
         if nu == False :
             self.mach = mach
-            self.nu = PMfunction(mach)
+            self.nu = PrandtlFunction(mach)
         else :
             self.mach = HallFunction(nu)
             self.nu = nu
