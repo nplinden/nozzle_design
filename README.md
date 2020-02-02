@@ -47,6 +47,17 @@ You should adapt the python3 path to your system, or alternatively delete the li
 You can then modify the parameters to your liking.
 
 ### Physics dictionnary
+
+|       Parameter       | Values |
+|:---------------------:|:------:|
+|       mass_flow       |  float |
+|     tank_pressure     |  float |
+|    tank_temperature   |  float |
+| specific_gas_constant |  float |
+|       exit_mach       |  float |
+|         gamma         |  float |
+
+
 The physics dictionnary contains the physical characteristic of the nozzle, they are :
 * The 'mass_flow' going through the nozzle
 * The 'tank_pressure' and 'tank_temperature' are the P/T condition in the tank upstream from your nozzle, this is used in the code as a way to define totale temperature and pressure (i.e. the dynamic Pressure (resp. Temperature) is zero for a Mach number of zero)
@@ -64,8 +75,10 @@ These parameters pertain to the nozzle geometry, and to the algorithm's initial 
 
 I don't know the reasons for the spike yet, however computing a single noz remains very quick in terms of calculations.
 ### Results dictionnary
-* 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable classe provided with the files to display. It work well with the monospace regular font, not so much with others. This will be refactored to work with any font.
-* 'save_table' does not work yet
+* 'display_tables' is used to display your nozzle's characteristics after it is computed, it uses a custom made vtable class provided with the files. It works well with the monospace regular font. 
+* 'save_contour' allows you to save the nozzle's contour as a csv file to the results folder.
+* 'save_format' lets you choose which format you want for your saved contour. The two possibilities are 'CATIA' and 'csv', the first produces a file easy to import in CATIA, the latter just saves the values.
+* 'save_figure' allows you to save the nozzle's graph to the results folder.
 
 ## Creating multiple nozzle in one script
 If you wish to do a parametric study (for instance if you want to graph the exit section's area with respect to the exit mach number). You can use the Nozzle.iterate() function, and input a list of parameters in the desired fields. You can also add the 'iter_out_param' keyword to the results dictionnary, the program will then display a table with two columns, one for the parameter you changed, and the other for the studied quantity (for now, it only work with computation_time and area_ratio).
