@@ -18,7 +18,7 @@ results = {
 'display_tables' : True ,
 'save_contour' : True ,
 'contour_format' : 'CATIA',
-'display_figure' : False ,
+'display_figure' : True ,
 'save_figure' : True ,
 #'iter_out_param' : 'area_ratio',
 },
