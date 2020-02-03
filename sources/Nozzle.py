@@ -253,8 +253,8 @@ class Nozzle :
             nozzle_ax.plot([0,self.wall[-1].x],[0,0],'k:')
 
             nozzle_ax.set_aspect('equal')
-            nozzle_ax.grid()
-            plt.savefig('results/nozzle.png')
+            #nozzle_ax.grid()
+            plt.savefig('results/nozzle.png',transparent=True)
 #iteration module
     def iterate(physics,geometry,results) :
         iteration = []
