@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from sources.Nozzle import Nozzle
+from sources.NozzleAxi import Nozzle
 Nozzle(
 physics = {
 'mass_flow' : 4 ,  #kg/s
@@ -12,14 +12,14 @@ physics = {
 geometry = {
 'nozzle_type' : 'expansion' ,
 'initial_angle' : 0.01 ,
-'step_number' : 10,
+'step_number' : 100,
 },
 results = {
 'display_tables' : True ,
 'save_contour' : True ,
 'contour_format' : 'CATIA',
-'display_figure' : True ,
-'save_figure' : True ,
+'display_figure' : False ,
+'save_figure' : False ,
 #'iter_out_param' : 'area_ratio',
 },
 )
