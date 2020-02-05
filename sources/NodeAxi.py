@@ -51,7 +51,7 @@ class Node:
         }
 
     def recalculate(self):
-        self.mach = HallFunction(self.nu)
+        #self.mach = HallFunction(self.nu)
         self.mu = asin(1/self.mach)
         self.Km = self.thet+self.nu
         self.Kp = self.thet-self.nu
@@ -138,11 +138,13 @@ class Node:
             print('m_3 =',m_3)
             print('mu_3 =',mu_3)
             #Premiere convergence de x_3
+            print('x_3 =',x_3)
             x_3 = (r_2-r_1+tan(thet_1-mu_1)*x_1-tan(thet_2+mu_2)*x_2)/(tan(thet_1-mu_1)-tan(thet_2+mu_2))
             print('x_3 =',x_3)
 
             #premiere convergence de r_3
             r_3 = r_1 +(x_3-x_1)*tan(thet_1-mu_1)
+            r_3 = r_2 + (x_3-x_2)*tan(thet_2+mu_2)
             print('r_3 =',r_3)
             delta[0]=(previous_step[0]-thet_3)/previous_step[0]
             delta[1]=(previous_step[1]-nu_3)/previous_step[1]
@@ -157,54 +159,36 @@ class Node:
 
     def findAxis(self,wall,xlim,ylim,limit=False):
         #Cette méthode trouve la position de l'intersection d'une caractéristique avec l'axe de la tuyère
-        ywall =  wall.y + wall.c*(self.x-wall.x)
-        if limit == False : limit = xlim
-        if self.y > wall.y + wall.c*(self.x-wall.x):
-            a = self.CmSlope
-            b = self.y - a*self.x
-            c = wall.c
-            d = wall.y - c*wall.x
-            if a != c and b != d :
-                x = (d-b)/(a-c)
-                y = round(a*x+b,5)
-                if self.x <= x <= xlim and 0 <= y < ylim:
-                    nu = self.Km
-                    M = HallFunction(nu)
-                    return Node(x,y,0,M)
-        elif self.y < wall.y + wall.c*(self.x-wall.x):
-            a = self.CpSlope
-            b = self.y - a*self.x
-            c = wall.c
-            d = wall.y - c*wall.x
-            if a != c and b != d :
-                x = (d-b)/(a-c)
-                y = round(a*x+b,5)
-                if self.x <= x <= limit and 0 <= y <= ylim:
-                    theta = atan(wall.c)
-                    nu = theta - self.Kp
-                    M = HallFunction(nu)
-                    return Node(x,y,theta,M)
-        return False
+      
+        x_1 = self.x
+        r_1 =self.y
+        thet_1 = self.thet
+        mu_1 = self.mu
+        nu_1 = self.nu
+        
+        x_2 = x_1-r_1/tan(thet_1-mu_1)
+        nu_2 = thet_1 + nu_1
+        m_2 = HallFunction(nu_2)
+        return Node(x_2,0,0,m_2)
 
 
 
     def findContour(self,wallList) :
         #Cette méthode calcule la position de l'intersection d'une caractéristique avec le contour de la tuyère
         targetWall = wallList[-1]
-        thet_intersect = self.thet
-        thet_contour = targetWall.thet
-        avg_slope = 0.5*( thet_contour + thet_intersect )
 
-        a = self.CpSlope
-        b = self.y - a*self.x
+        x_1=self.x
+        thet_1 = self.thet
+        mu_1 = self.mu
+        r_1 = self.y
 
-        c = tan(avg_slope)
-        d = targetWall.y - c*targetWall.x
+        x_m = targetWall.x
+        thet_m = targetWall.thet
+        r_m = targetWall.y
 
-        if a != c and b != d :
-            x = (d-b)/(a-c)
-            y = a*x+b
-        return Node(x,y,thet_intersect,self.mach)
+        x_2 = (x_1*tan(thet_1+mu_1)-x_m*tan(0.5*(thet_m+thet_1))+r_m-r_1)/(tan(thet_1+mu_1)-tan(0.5*(thet_m+thet_1)))
+        r_2 = tan(thet_1+mu_1)*(x_2-x_1)+r_1
+        return Node(x_2,r_2,thet_1,self.mach)
 
 
 

@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-from sources.NozzleAxi import Nozzle
-Nozzle(
+import matplotlib.pyplot as plt
+from sources.Nozzle import Nozzle
+noz = Nozzle(
 physics = {
-'mass_flow' : 4 ,  #kg/s
+'mass_flow' : 4,  #kg/s
 'tank_pressure' : 10e5 , #Pa
 'tank_temperature' : 573 , #K
 'specific_gas_constant' : 287.05 , #J/kg/K
@@ -11,8 +12,8 @@ physics = {
 },
 geometry = {
 'nozzle_type' : 'expansion' ,
-'initial_angle' : 0.01 ,
-'step_number' : 100,
+'initial_angle' : 0.1 ,
+'step_number' : 5,
 },
 results = {
 'display_tables' : True ,
@@ -23,3 +24,37 @@ results = {
 #'iter_out_param' : 'area_ratio',
 },
 )
+
+plt.figure()
+X = [i.x for i in noz.wall][0:5]
+Y = [i.y for i in noz.wall][0:5]
+ax = plt.subplot(111)
+ax.plot(X,Y,'b-')
+for i in noz.seed :
+    i.graphNode(ax,'ko')
+ax.grid()
+ax.set_ylim(-0.005,0.04)
+ax.set_xlim(-0.006,0.15)
+ax.set_aspect('equal')
+ax.plot([0,noz.wall[-1].x],[0,0],'k--')
+for i, seg in enumerate(noz.seg) :
+    if i == 25 : 
+        ax.plot([noz.wall[-6].x,noz.wall[-5].x],[noz.wall[-6].y,noz.wall[-5].y],'b-') 
+        ax.plot([noz.wall[-6].x,noz.wall[-5].x],[noz.wall[-6].y,noz.wall[-5].y],'ko') 
+    if i == 26 : 
+        ax.plot([noz.wall[-5].x,noz.wall[-4].x],[noz.wall[-5].y,noz.wall[-4].y],'b-') 
+        ax.plot([noz.wall[-5].x,noz.wall[-4].x],[noz.wall[-5].y,noz.wall[-4].y],'ko') 
+    if i == 27 : 
+        ax.plot([noz.wall[-4].x,noz.wall[-3].x],[noz.wall[-4].y,noz.wall[-3].y],'b-') 
+        ax.plot([noz.wall[-4].x,noz.wall[-3].x],[noz.wall[-4].y,noz.wall[-3].y],'ko') 
+    if i == 28 : 
+        ax.plot([noz.wall[-3].x,noz.wall[-2].x],[noz.wall[-3].y,noz.wall[-2].y],'b-') 
+        ax.plot([noz.wall[-3].x,noz.wall[-2].x],[noz.wall[-3].y,noz.wall[-2].y],'ko')    
+    if i == 29 : 
+        ax.plot([noz.wall[-2].x,noz.wall[-1].x],[noz.wall[-2].y,noz.wall[-1].y],'b-') 
+        ax.plot([noz.wall[-2].x,noz.wall[-1].x],[noz.wall[-2].y,noz.wall[-1].y],'ko') 
+    seg.graphSegment(ax,'ok--')
+    plt.savefig('graphs/noz'+str(i)+'.png')
+
+
+plt.show()
