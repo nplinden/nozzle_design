@@ -4,10 +4,10 @@ from sources.Nozzle import Nozzle
 Nozzle(
 physics = {
 'mass_flow' : 4,  #kg/s
-'tank_pressure' : 10e5 , #Pa
-'tank_temperature' : 573 , #K
+'tank_pressure' : 20e5 , #Pa
+'tank_temperature' : 700 , #K
 'specific_gas_constant' : 287.05 , #J/kg/K
-'exit_pressure' : 1e5,  #Mach
+'exit_mach' : 2.5,  #Mach
 'gamma' : 1.4
 },
 geometry = {
@@ -17,8 +17,8 @@ geometry = {
 },
 results = {
 'display_tables' : True ,
-'save_contour' : True ,
-'contour_format' : 'CATIA',
+'save_contour' : False ,
+'contour_format' : 'csv',
 'display_figure' : False ,
 'save_figure' : True ,
 #'iter_out_param' : 'area_ratio',
